@@ -115,7 +115,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -145,6 +145,120 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/02/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/02/02/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" class="post-title-link" itemprop="url">使用hexo进行博客搭建</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+      
+
+      <time title="Created: 2022-02-02 10:47:48 / Modified: 12:40:21" itemprop="dateCreated datePublished" datetime="2022-02-02T10:47:48+08:00">2022-02-02</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h1><p>使用hexo在本地可以方便、快速地搭建个人博客，同时依赖github可实现将个人博客推送至远端，本篇介绍在Macbook上利用hexo和node.js搭建属于自己的博客</p>
+<ol>
+<li><p>安装node.js</p>
+<p>在<a target="_blank" rel="noopener" href="https://nodejs.org/zh-cn/">官网</a>下载并按步骤安装(安装完成后会一并配置npm包管理器)</p>
+</li>
+<li><p>安装hexo</p>
+</li>
+</ol>
+<p>  命令行输入：<code>npm install -g hexo-cli</code></p>
+<p><strong>环境配置验证</strong></p>
+<p>命令行输入<code>node -v</code>, <code>hexo -v</code>, <code>npm -v</code>检测是否安装成功</p>
+<h1 id="本地博客搭建"><a href="#本地博客搭建" class="headerlink" title="本地博客搭建"></a>本地博客搭建</h1><ol>
+<li>在本地创建一个文件夹用于存放博客的相关文件(存放位置自定义)</li>
+</ol>
+<p>​       命令行输入：<code>makir blog</code></p>
+<ol start="2">
+<li><p>进入<code>blog</code>文件，使用hexo初始化博客</p>
+<p>命令行输入：<code>hexo init</code></p>
+</li>
+</ol>
+<p>​        初始化完成后会看到提示: start blogging with hexo</p>
+<ol start="3">
+<li><p>使用本地预览命令启动博客</p>
+<p>命令行输入：<code>hexo s</code></p>
+</li>
+<li><p>新建一篇博文</p>
+</li>
+</ol>
+<p>​        <code>hexo -n &quot;blog name&quot;</code>，之后可以使用任意markdown编辑器书写博文</p>
+<ol start="5">
+<li>生成博文</li>
+</ol>
+<p>​        <code>hexo g</code></p>
+<p>随后便可在本地博客查阅新建的博文。</p>
+<h1 id="部署博客"><a href="#部署博客" class="headerlink" title="部署博客"></a>部署博客</h1><p>推荐使用github部署博客</p>
+<ol>
+<li>在github新建仓库，注意仓库名称必须为github用户名，即<code>&lt;username&gt;.github.io</code>。</li>
+<li>在本地<code>blog</code>文件下安装插件<code>npm install --save hexo-deployer-git</code></li>
+<li>打开<code>blog/_config.yml</code>文件，增加Deployment部分</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># Deployment</span><br><span class="line">## Docs: https://hexo.io/docs/one-command-deployment</span><br><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: git@github.com: &lt;username&gt;/&lt;username&gt;.github.io.git</span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>部署到远端</li>
+</ol>
+<p>​        <code>hexo d</code></p>
+<ol start="5">
+<li>访问博客，使用<a target="_blank" rel="noopener" href="https://username.github.io/">https://username.github.io</a></li>
+</ol>
+<p>到此为止便可成功将博文进行发布，接下来对其中可能出现的问题进行说明。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
