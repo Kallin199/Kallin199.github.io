@@ -116,12 +116,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-count">2</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -150,6 +150,106 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/17/linux%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AEmujoco%E4%B8%8Edm-control-md/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kailin zeng">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Kailin's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/02/17/linux%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AEmujoco%E4%B8%8Edm-control-md/" class="post-title-link" itemprop="url">linux环境配置mujoco与dm_control.md</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-02-17 14:44:44 / 修改时间：16:20:56" itemprop="dateCreated datePublished" datetime="2022-02-17T14:44:44+08:00">2022-02-17</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="在linux环境下配置MoJoco与dm-control环境"><a href="#在linux环境下配置MoJoco与dm-control环境" class="headerlink" title="在linux环境下配置MoJoco与dm_control环境"></a>在linux环境下配置MoJoco与dm_control环境</h1><p>DeepMind Control Suite 是 DeepMind 最新开源的，一套有标准化结构的持续控制任务，旨在成为强化学习 Agent 的性能基准。Control Suite 由 Python 编写，并由 MuJoCo 物理引擎驱动。</p>
+<h2 id="1-安装MuJoco"><a href="#1-安装MuJoco" class="headerlink" title="1. 安装MuJoco"></a>1. 安装MuJoco</h2><ul>
+<li><p>安装包下载：DeepMind开源并维护了MoJoco200后的版本<a target="_blank" rel="noopener" href="https://mujoco.org/download">安装地址</a>，而MuJoco200以及之前的版本可以在<a target="_blank" rel="noopener" href="https://roboti.us/download.html">地址</a>下载</p>
+</li>
+<li><p>激活文件下载：MuJoco开源以后，激活码可以直接在官网下载<a target="_blank" rel="noopener" href="https://roboti.us/file/mjkey.txt">下载地址</a></p>
+</li>
+<li><p>文件布置：在根目录创建文件夹<code>.mujoco</code>，里面存放解压后的安装包<code>mujoco200</code>和激活码<code>mjkey.txt</code>。同时将激活码复制到mujoco200下的bin目录下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mkdir ~/.mujoco </span><br><span class="line">cp mujoco200_linux.zip ~/.mujoco </span><br><span class="line">cd ~/.mujoco </span><br><span class="line">unzip mujoco200_linux.zip</span><br><span class="line">cp mjkey.txt ~/.mujoco </span><br><span class="line">cp mjkey.txt ~/.mujoco/mujoco200_linux/bin</span><br></pre></td></tr></table></figure></li>
+<li><p>添加环境变量<code>vim ~/.bashrc</code>，加入如下地址后运行<code>source ~/.bashrc</code>生效</p>
+</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export LD_LIBRARY_PATH=~/.mujoco/mujoco200/bin$&#123;LD_LIBRARY_PATH:+:$&#123;LD_LIBRARY_PATH&#125;&#125; </span><br><span class="line">export MUJOCO_KEY_PATH=~/.mujoco$&#123;MUJOCO_KEY_PATH&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>测试：若出现仿真画面或者显示MuJoco版本<code>MuJoCo Pro version 2.00</code>则安装成功</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ~/.mujoco/mujoco200/bin </span><br><span class="line">./simulate ../model/humanoid.xml</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-安装MoJoco-py"><a href="#2-安装MoJoco-py" class="headerlink" title="2. 安装MoJoco_py"></a>2. 安装MoJoco_py</h2><ul>
+<li>pip安装：<code>pip3 install -U &#39;mujoco-py&lt;2.2,&gt;=2.1&#39;</code></li>
+<li>测试：进入python环境，<code>import mujoco_py</code>，若无报错则安装成功</li>
+</ul>
+<h2 id="3-安装dm-control-库"><a href="#3-安装dm-control-库" class="headerlink" title="3. 安装dm_control 库"></a>3. 安装dm_control 库</h2><p>在确保MuJoco安装成功后，进行dm_control<a target="_blank" rel="noopener" href="https://github.com/deepmind/dm_control">项目地址</a>的安装，有两种安装方式可供选择：</p>
+<ol>
+<li><code>pip install dm_control</code> （默认安装的版本适用于MuJoco211）</li>
+<li><code>pip install git+git://github.com/deepmind/dm_control.git</code></li>
+</ol>
+<p>安装成功后，可以进入python环境<code>import dm_control</code>进行测试。</p>
+<h1 id="踩坑记录"><a href="#踩坑记录" class="headerlink" title="踩坑记录"></a>踩坑记录</h1><h2 id="报错一：dm-control直接安装"><a href="#报错一：dm-control直接安装" class="headerlink" title="报错一：dm_control直接安装"></a>报错一：dm_control直接安装</h2><p>ImportError: cannot import name ‘constants’ from partially initialized module ‘dm_control.mujoco.wrapper.mjbindings’ (most likely due to a circular import) (/home/lzx/dm_control/dm_control/mujoco/wrapper/mjbindings/<strong>init</strong>.py)</p>
+<p>原因：如果通过下载源文件+<code>pip install -e .</code>的方式安装，则dm_control被安装在文件下载的路径，而非 python package folder。</p>
+<p>解决办法：通过指定版本安装对应的dm_control：<code> pip install dm-control==0.0.364896371</code></p>
+<h2 id="报错二：指定环境路径"><a href="#报错二：指定环境路径" class="headerlink" title="报错二：指定环境路径"></a>报错二：指定环境路径</h2><p><img src="https://tva1.sinaimg.cn/large/e6c9d24ely1gzgkls76bzj21mk04sabm.jpg"></p>
+<p>原因：在默认位置放置mujoco200和mjpro150，但是却在环境变量中指定MJLIB_PATH</p>
+<p>解决办法：在<code>~/.bashrc</code>中删除<code>$MJLIB_PATH</code>后，重新安装dm_control，生效的环境变量为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">export MUJOCO_GL=&quot;egl&quot;</span><br><span class="line">export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/lzx/mjpro150/bin</span><br><span class="line">export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/lzx/.mujoco/mujoco200/bin</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
