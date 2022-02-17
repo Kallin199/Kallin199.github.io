@@ -116,7 +116,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -126,7 +126,7 @@
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -316,7 +316,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/17/RL-Active-Pretraining/">
+    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/17/RL-%E8%AE%BA%E6%96%87%E6%B3%9B%E8%AF%BB-Dynamics-aware-unsupervised-discovery-of-skills/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -329,7 +329,122 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/02/17/RL-Active-Pretraining/" class="post-title-link" itemprop="url">RL-Active Pretraining.md</a>
+          <a href="/2022/02/17/RL-%E8%AE%BA%E6%96%87%E6%B3%9B%E8%AF%BB-Dynamics-aware-unsupervised-discovery-of-skills/" class="post-title-link" itemprop="url">RL-论文泛读：Dynamics-aware unsupervised discovery of skills.md</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-02-17 16:34:20 / 修改时间：16:53:15" itemprop="dateCreated datePublished" datetime="2022-02-17T16:34:20+08:00">2022-02-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/reinforcement-learning/" itemprop="url" rel="index"><span itemprop="name">reinforcement learning</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="DADS"><a href="#DADS" class="headerlink" title="DADS"></a>DADS</h1><blockquote>
+<p>Sharma A, Gu S, Levine S, et al. Dynamics-aware unsupervised discovery of skills[J]. arXiv preprint arXiv:1907.01657, 2019.</p>
+</blockquote>
+<p><strong>主要贡献</strong></p>
+<ol>
+<li>结合model-free进行预训练，使用model-based得到策略。<ul>
+<li>连续技能空间</li>
+<li>可以处理稀疏奖励</li>
+</ul>
+</li>
+</ol>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gx3x2m0k8cg30go0697wn.gif"></p>
+<p><strong>算法原理</strong></p>
+<p>优化互信息,获得无监督技能z，可被认为是一系列动作集合：<br>$$<br>I(s’;z|s)=\mathcal H(z|s)-\mathcal H(z|s’,s) = \mathcal H(s’|s)-\mathcal H(s’|s,z)<br>$$</p>
+<ul>
+<li><p>$\mathcal H(s’|s)$：使得已知当前状态情况下，下一时刻状态尽可能多样</p>
+</li>
+<li><p>$\mathcal H(s’|s,z)$：引入技能z以后，下一时刻状态尽可能易预测</p>
+</li>
+</ul>
+<p>最终目标是优化基于技能的策略$\pi(a|s,z)$,其中采样的$z \sim p(z)$（由用户事先定义）可以最大化的提供状态转移信息。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwyd55bkcij31di0kyn1i.jpg"></p>
+<p>智能体与环境交互产生转移数据，通过估计$q(s’|s,z)$的预测正确性来获得奖励</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gx3xev2quhj30xw04wt8z.jpg" style="zoom:50%;" />
+
+<p>状态转移估计器通过最大化真实转移概率进行更新</p>
+<p>技能z视为对一系列动作集合在隐空间$Z$的编码，使得智能体对前序行为进行总结，然后使用技能z和当前状态预测后续状态转移。</p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwyeaovbu6j31f20m8wij.jpg">Latent Space Planner: Planner维护隐策略空间的奖励分布，使用状态转移函数对各个skill下的状态转移轨迹进行模拟，计算奖励</p>
+<ol>
+<li><p>训练时，更新奖励参数$\mathcal N_i(\mu_i,\sum)$.</p>
+</li>
+<li><p>测试时，使用具有最高优先级的子策略进行行动</p>
+</li>
+</ol>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gx3xblwpgfj30rs056q36.jpg" style="zoom:50%;" />
+
+<p>策略使用正态分布（均值为奖励，标准方差）进行编码。每个技能的视距为$H_Z$, ，共有$H_P$个隐变量。</p>
+<p><strong>专家评注</strong></p>
+<p>​    学习用于模型预测控制的低级“技能”，通过最大化下一个状态s和当前状态s的当前技能z之间的相互信息来学习的，相当于最大限度地扩大环境中产生的过渡的多样性，同时使技能z为下一个状态提供信息。</p>
+<p>​    技能z对应于一组动作序列，这些动作序列由分布$\pi(a|s,z)$表示，使用近似动力学$q_{\phi}(s’|s,z)$变分界模拟转移函数，表示使用技能z在当前状态的环境转移，优化该变分下界以产生最佳$q_{\phi}(s’|s,z), \pi(a|s,z)$。在奖励阶段，使用学习的过渡动力学和技能函数模拟多个轨迹，根据奖励函数计算每个轨道的奖励，执行最佳轨道的第一个动作并重复。规划是在潜在的技能空间中完成的，这使得更轻松的长视距规划成为更容易。</p>
+<p>（1）学习的技能表现出低方差行为（这意味着这些技能在用于模型预测控制时具有可预测的行为）</p>
+<p>（2）模型预测控制与其他相关基线相比表现良好。</p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/17/RL-%E8%AE%BA%E6%96%87%E6%B3%9B%E8%AF%BB-Active-Pretraining/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kailin zeng">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Kailin's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/02/17/RL-%E8%AE%BA%E6%96%87%E6%B3%9B%E8%AF%BB-Active-Pretraining/" class="post-title-link" itemprop="url">RL-Active Pretraining.md</a>
         </h2>
 
         <div class="post-meta-container">
@@ -452,7 +567,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/17/RL-%E6%97%A0%E7%9B%91%E7%9D%A3%E6%B5%8B%E8%AF%95%E5%9F%BA%E5%87%86/">
+    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/17/RL-%E8%AE%BA%E6%96%87%E6%B3%9B%E8%AF%BB-%E6%97%A0%E7%9B%91%E7%9D%A3%E6%B5%8B%E8%AF%95%E5%9F%BA%E5%87%86/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -465,7 +580,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/02/17/RL-%E6%97%A0%E7%9B%91%E7%9D%A3%E6%B5%8B%E8%AF%95%E5%9F%BA%E5%87%86/" class="post-title-link" itemprop="url">RL-无监督测试基准.md</a>
+          <a href="/2022/02/17/RL-%E8%AE%BA%E6%96%87%E6%B3%9B%E8%AF%BB-%E6%97%A0%E7%9B%91%E7%9D%A3%E6%B5%8B%E8%AF%95%E5%9F%BA%E5%87%86/" class="post-title-link" itemprop="url">RL-无监督测试基准.md</a>
         </h2>
 
         <div class="post-meta-container">
@@ -566,7 +681,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/17/RL-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-mujoco&dm-control/">
+    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/17/RL-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%EF%BC%9Amujoco&dm-control/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -579,7 +694,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/02/17/RL-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-mujoco&dm-control/" class="post-title-link" itemprop="url">linux环境配置mujoco与dm_control.md</a>
+          <a href="/2022/02/17/RL-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE%EF%BC%9Amujoco&dm-control/" class="post-title-link" itemprop="url">linux环境配置mujoco与dm_control.md</a>
         </h2>
 
         <div class="post-meta-container">
@@ -675,7 +790,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/02/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">
+    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/02/Blog-%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -688,7 +803,7 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/02/02/%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" class="post-title-link" itemprop="url">使用hexo进行博客搭建</a>
+          <a href="/2022/02/02/Blog-%E4%BD%BF%E7%94%A8hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/" class="post-title-link" itemprop="url">使用hexo进行博客搭建</a>
         </h2>
 
         <div class="post-meta-container">
