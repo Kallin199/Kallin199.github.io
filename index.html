@@ -116,12 +116,12 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">5</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -159,7 +159,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/17/linux%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AEmujoco%E4%B8%8Edm-control-md/">
+    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/17/RL-Active-Pretraining/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -172,7 +172,239 @@
     </span>
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
-          <a href="/2022/02/17/linux%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AEmujoco%E4%B8%8Edm-control-md/" class="post-title-link" itemprop="url">linux环境配置mujoco与dm_control.md</a>
+          <a href="/2022/02/17/RL-Active-Pretraining/" class="post-title-link" itemprop="url">RL-Active Pretraining.md</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-02-17 16:32:00 / 修改时间：16:33:07" itemprop="dateCreated datePublished" datetime="2022-02-17T16:32:00+08:00">2022-02-17</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="VISR"><a href="#VISR" class="headerlink" title="VISR"></a>VISR</h1><blockquote>
+<p>Hansen S, Dabney W, Barreto A, et al. Fast task inference with variational intrinsic successor features[J]. a conference paper at ICLR 2020</p>
+</blockquote>
+<p><strong>问题引入</strong></p>
+<ol>
+<li><p>在无监督环境中训练成本较低，此阶段智能体自由地和环境交互，收集环境的信息，以尽可能加快强化学习阶段。</p>
+</li>
+<li><p>泛化能力高，智能体可以根据奖励的设置执行定义中的一项或者多项任务</p>
+<p>由于无监督学习预训练模型独立于奖励，最大化潜在变量策略与状态访问提取的行为信息</p>
+</li>
+</ol>
+<p><strong>痛点问题</strong></p>
+<ol>
+<li><p>传统无监督模型泛化性能差：</p>
+<p>以前无监督预训练RL模型（DIAYN、VIC）在适应下游任务时，泛化性差、推理过程缓慢的。下游任务可能在无监督学习的标准行为之间，所以需要潜在行为空间进行插值。构建训练期间未遇到的潜在行为的策略时此方法的主要问题。</p>
+</li>
+</ol>
+<p><strong>主要贡献</strong></p>
+<ol>
+<li>利用后继特征，假设奖励函数在某些特征中是线性的，将奖励作为特征的加权求和。后继特征支持仅奖励函数不同的任务之间进行快速迁移学习。</li>
+</ol>
+<p><strong>算法原理</strong></p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwy4iz9bqdj31620gq76l.jpg"></p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwy4qho9j7j31r60pi7d4.jpg"></p>
+<ul>
+<li>在无监督训练阶段，学习到各个状态动作对的后继特征，将后继特征总结为一个网络</li>
+<li>在监督阶段，通过拟合奖励学习$w$，（通过实际奖励定义哪个状态特征好，哪个状态差）</li>
+<li>在监督学习阶段，由于不知道$s’$，所以需要通过子策略来进行预测，拟合奖励生成n个子策略，在后继特征网络中输入$s,a,e(\pi_i)$，输出当前子策略$\pi_i$在$(s,a)$下的后继特征，与权重向量相乘以后，组合出Q和最终策略，由子策略组合而成</li>
+</ul>
+<hr>
+<p><strong>如何提取状态特征-子策略学习？</strong><br>$$<br>F(\theta) = I(z;f(\tau_{\pi_{\theta}}))=H(z)-H(z|f(\tau_{\pi_{\theta}}))<br>$$<br>最大化子策略与代理行为之间的互信息，$f$输出采样当亲轨迹中的某个状态。</p>
+<h1 id="APT"><a href="#APT" class="headerlink" title="APT"></a>APT</h1><blockquote>
+<p>Liu, H. and Abbeel, P. Behavior from the void: Unsuper- vised active pre-training. In <em>International Conference on Machine Learning</em>, 2021.</p>
+</blockquote>
+<p><strong>主要贡献</strong></p>
+<ol>
+<li>使用<strong>对比学习</strong>获得低维度状态特征</li>
+<li>通过最大化在抽象表示空间中计算的非参数熵（k近邻距离）来探索环境，这避免了具有挑战性的密度建模。</li>
+<li>一方面最大化期望奖励，一方面降低表示误差。使用特征空间中的k近邻距离作为内部奖励：</li>
+</ol>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gwyc5z43unj30s204qaa7.jpg" style="zoom:67%;" />
+
+<p><strong>总结</strong></p>
+<ol>
+<li>使用像素状态作为输入</li>
+<li>不需要维护密度估计器，使用k近邻</li>
+<li>使用对比学习对状态进行编码</li>
+<li>表现得好的前提是，内部奖励和外部奖励处于同一数量级。后续改进</li>
+<li>fine-tuning部分讲的不是很清楚。为什么要匹配奖励数量级，外部奖励如何使用？</li>
+<li>在fine-tuning过程中容易产生灾难性遗忘。解决方式：固定参数与随机初始化相结合</li>
+</ol>
+<h1 id="APS"><a href="#APS" class="headerlink" title="APS"></a>APS</h1><blockquote>
+<p>Liu H, Abbeel P. Aps: Active pretraining with successor features[C]//International Conference on Machine Learning. PMLR, 2021: 6736-6747.</p>
+</blockquote>
+<p><strong>问题引入</strong></p>
+<p>第一类基于<strong>最大化任务变量 (p(z)) 及其在状态访问 (p(s)) 方面的行为之间的互信息</strong>，以鼓励学习可区分的任务条件行为，这已被证明是有效的 在基于状态的强化学习和视觉强化学习中。 Hansen 等人提出的 VISR是该类别中最先进的技术，其无需进行密度估计。VISR 的优势在于其后续功能可以快速适应新任务。 尽管它很有效，但 VISR 面临的根本问题是缺乏探索。</p>
+<p>第二类是最大化状态熵。APT就是此类算法的典型代表，使用最近邻距离最为奖励。然而，APT 的问题在于它纯粹是探索性的和任务不可知的，并且<strong>缺乏任务变量</strong>的概念，与任务调节策略相比，它更难适应新任务。</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gwyca2krwkj31ni0hin1g.jpg" style="zoom:50%;" />
+
+<p><strong>算法原理</strong></p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNly1gwycazwjuzj31f60k4dj0.jpg"></p>
+<p>​    与VISR类似，APS将目标函数定义为行为与子目标的互信息。但是其将互信息拆分为$H(s)-H(s|z)$一方面通过APT的最近邻设置内在奖励鼓励探索最大化状态熵$H(s)$，另一方面，学习后继特征减子目标内部状态熵$H(s|z)$。奖励定义如下：</p>
+<img src="https://tva1.sinaimg.cn/large/008i3skNly1gwycf6j0g9j30w00bydgr.jpg" style="zoom: 50%;" />
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/17/RL-%E6%97%A0%E7%9B%91%E7%9D%A3%E6%B5%8B%E8%AF%95%E5%9F%BA%E5%87%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kailin zeng">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Kailin's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/02/17/RL-%E6%97%A0%E7%9B%91%E7%9D%A3%E6%B5%8B%E8%AF%95%E5%9F%BA%E5%87%86/" class="post-title-link" itemprop="url">RL-无监督测试基准.md</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-02-17 16:28:18 / 修改时间：16:31:00" itemprop="dateCreated datePublished" datetime="2022-02-17T16:28:18+08:00">2022-02-17</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="URLB"><a href="#URLB" class="headerlink" title="URLB"></a>URLB</h1><blockquote>
+<p>Laskin M, Yarats D, Liu H, et al. URLB: Unsupervised Reinforcement Learning Benchmark[J]. Conference on Neural Information Processing Systems, 2021.</p>
+</blockquote>
+<h2 id="问题引入"><a href="#问题引入" class="headerlink" title="问题引入"></a><strong>问题引入</strong></h2><p>​    强化学习能解决众多复杂但是具体的控制问题，但是训练具有泛化能力的智能体，使其能迅速适应新任务仍然缺乏研究。在过去的五年中，深度强化学习 (RL) 一直是自主控制领域多项突破的源泉。 RL 算法已被用于训练代理玩 Atari 直接从像素 [44, 45] 学习视频游戏，学习机器人运动 [52-54] 和操纵 [2] 来自原始感官输入的策略，掌握围棋 [58, 59] 并玩大型多人游戏 视频游戏 [6, 65]。 虽然这些结果是自主决策的重大进步，但更深入的观察揭示了一个基本的限制。 上述算法产生的代理只能 解决他们被训练解决的单一任务。 因此，当前的 RL 方法会产生脆弱的泛化能力差的策略[16]，限制了它们对许多问题的适用性感兴趣 [23]。 因此，重要的是要超越当今强大但狭窄的 RL 系统 面向能够快速适应新下游任务的通用系统 </p>
+<h2 id="模型介绍"><a href="#模型介绍" class="headerlink" title="模型介绍"></a><strong>模型介绍</strong></h2><p>​    监督学习执行每一步动作都需要环境奖励，而无监督学习模型具有两个部分：无奖励预训练和基于外部奖励微调，预训练模型的优劣由下游任务的快速适应性衡量</p>
+<h2 id="基准介绍"><a href="#基准介绍" class="headerlink" title="基准介绍"></a>基准介绍</h2><ol>
+<li><p>状态表示：states 或是像素信息，分离表证学习变量</p>
+</li>
+<li><p>在预训练阶段，在智能体训练的100k，500k，1M，2M处设置断点进行测试</p>
+</li>
+<li><p>在下游测试阶段，以100k的频率进行测试评估</p>
+</li>
+<li><p>测试环境： DeepMind Control Suite(DMC),广泛采用，两种obs输入，具有不同难度的连续动作环境</p>
+</li>
+</ol>
+<p><strong>评价基准</strong>：1.能快速适应下游任务的策略被定义为好的，2.测量数据多样性</p>
+<p><strong>控制变量：</strong>由于强化学习过程包含：表征学习+行为决策。所以为了去除表征学习对策略表现的影响，设计基于状态和基于图像提取的特征来进行行为决策。实现解耦</p>
+<p><strong>说明：</strong>基本RL模型的统一，由于SAC容易造成策略熵崩溃，使用DDPG比SAC训练出的策略更具鲁棒性</p>
+<h2 id="未来展望"><a href="#未来展望" class="headerlink" title="未来展望"></a>未来展望</h2><ol>
+<li><p>已实现的无监督 RL 算法均无法解决基准问题。 </p>
+<p>尽管访问最多 到 2M 预训练步骤，经过 100k 步微调后，没有方法与渐近性能相匹配 在大多数任务上。 性能最佳的基准算法实现了 40 - 70% 的归一化回报 而当代理达到接近 100% 的归一化回报时，基准被认为已解决。 这表明我们距离深度强化学习中的有效泛化还很远 </p>
+</li>
+<li><p>无监督 RL 并非普遍优于随机初始化。</p>
+<p>我们还观察到微调无监督的 RL 基线并不总是优于从随机的微调初始化。 特别是在从状态中学习时，随机初始化与大多数基线。 然而，当从随机初始化的像素微调中学习时 表明表征学习是无监督预训练的重要组成部分。 </p>
+</li>
+<li><p>从状态探索和从像素探索之间存在很大的性能差距。 </p>
+<p>支持表征学习作为探索的一个重要方面的另一个观察结果是 与学习相比，从像素学习时，探索算法会显着降低 从状态。 如图 3 所示，相比之下，大多数算法在从像素中学习时损失了 20 - 50% 说明，尤其是在更困难的环境中（四足动物，Jaco Arm）。 这些结果表明 在预训练期间更好的表征学习是一个重要的研究方向 </p>
+</li>
+<li><p>总的来说，基于能力的方法不如基于知识和数据的方法 方法。 </p>
+<p>虽然基于知识和基于数据的方法在跨领域都具有竞争力 URLB，我们发现基于能力的方法落后了。 具体来说，没有 基于能力的方法，可在任何 URLB 上实现最先进的平均性能 任务，它指出基于能力的无监督 RL 作为一个有影响力的研究方向 很大的改进空间 </p>
+</li>
+<li><p>没有一个基准同时在基于state和基于图像的特征上表现最优</p>
+</li>
+<li><p>当前无监督模型的最大问题：fine-tune的效率随着预训练模型而改进，目前这两部分是相互分离的。期望看到fintune’后的表现随着预训练步数的增加而增加。</p>
+</li>
+<li><p>需要新的微调策略来快速适应任务。目前是将预训练权重初始化AC，并且通过外在奖励进行微调，可能还有其他更好的微调策略。特别是针对SMM这类算法</p>
+</li>
+</ol>
+<blockquote>
+<p>预训练模型中存储有当前模型具有的能力z，若下游任务能被快速判断为当前任务的子集，则更好的微调模型就可以被得到。</p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/17/RL-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-mujoco&dm-control/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kailin zeng">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Kailin's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/02/17/RL-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-mujoco&dm-control/" class="post-title-link" itemprop="url">linux环境配置mujoco与dm_control.md</a>
         </h2>
 
         <div class="post-meta-container">
