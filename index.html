@@ -116,7 +116,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -126,7 +126,7 @@
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">标签</span>
       </div>
   </nav>
@@ -155,6 +155,94 @@
 
 
     <div class="main-inner index posts-expand">
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://kallin199.github.io/2022/02/18/tmux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="kailin zeng">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Kailin's blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2022/02/18/tmux/" class="post-title-link" itemprop="url">tmux</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-02-18 09:48:02 / 修改时间：10:06:01" itemprop="dateCreated datePublished" datetime="2022-02-18T09:48:02+08:00">2022-02-18</time>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <h1 id="tmux常用命令"><a href="#tmux常用命令" class="headerlink" title="tmux常用命令"></a>tmux常用命令</h1><p>tmux采用C/S模型构建，输入tmux命令就相当于开启了一个服务器，此时默认将新建一个会话，然后会话中默认新建一个窗口，窗口中默认新建一个面板。会话、窗口、面板之间的联系如下：</p>
+<p>一个tmux <code>session</code>（会话）可以包含多个<code>window</code>（窗口），窗口默认充满会话界面，因此这些窗口中可以运行相关性不大的任务。</p>
+<p>一个<code>window</code>又可以包含多个<code>pane</code>（面板），窗口下的面板，都处于同一界面下，这些面板适合运行相关性高的任务，以便同时观察到它们的运行情况。</p>
+<p>运行tmux后，即使与服务器中断连接，程序也可以继续运行，其现场保护功能大大方便了学习和工作</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>Tmux 一般需要自己安装，在不同平台安装命令如下:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"># Ubuntu 或 Debian</span><br><span class="line">$ sudo apt-get install tmux</span><br><span class="line"></span><br><span class="line"># CentOS 或 Fedora</span><br><span class="line">$ sudo yum install tmux</span><br><span class="line"></span><br><span class="line"># Mac</span><br><span class="line">$ brew install tmux</span><br></pre></td></tr></table></figure>
+
+<p>安装完成后，命令行启动和退出tmux</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 新建一个无名称会话</span><br><span class="line">$ tmux</span><br><span class="line">$ exit</span><br></pre></td></tr></table></figure>
+
+<h2 id="会话管理"><a href="#会话管理" class="headerlink" title="会话管理"></a>会话管理</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"># 新建会话</span><br><span class="line">$ tmux new -s &lt;session-name&gt;</span><br><span class="line"></span><br><span class="line"># 断开连接</span><br><span class="line">$ tmux detach</span><br><span class="line"></span><br><span class="line"># 查看所有会话</span><br><span class="line">$ tmux ls</span><br><span class="line"></span><br><span class="line"># 使用会话名称接入会话</span><br><span class="line">$ tmux attach -t &lt;session-name&gt;</span><br><span class="line">$ tmux a -t &lt;session-name&gt;</span><br><span class="line"></span><br><span class="line"># 杀死会话</span><br><span class="line">$ tmux kill-session -t &lt;session-name&gt;</span><br><span class="line"></span><br><span class="line"># 切换会话</span><br><span class="line">$ tmux switch -t &lt;session-name&gt;</span><br><span class="line"></span><br><span class="line"># 会话重命名</span><br><span class="line">$ tmux rename-session -t 0 &lt;new-name&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="会话快捷键"><a href="#会话快捷键" class="headerlink" title="会话快捷键"></a>会话快捷键</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">前缀	 指令	描述</span><br><span class="line">Ctrl+b	?	显示快捷键帮助文档</span><br><span class="line">Ctrl+b	d	断开当前会话</span><br><span class="line">Ctrl+b	D	选择要断开的会话</span><br><span class="line">Ctrl+b	Ctrl+z	挂起当前会话</span><br><span class="line">Ctrl+b	r	强制重载当前会话</span><br><span class="line">Ctrl+b	s	显示会话列表用于选择并切换</span><br><span class="line">Ctrl+b	:	进入命令行模式，此时可直接输入ls等命令</span><br><span class="line">Ctrl+b	[	进入复制模式，按q退出</span><br><span class="line">Ctrl+b	]	粘贴复制模式中复制的文本</span><br><span class="line">Ctrl+b	~	列出提示信息缓存</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="快捷操作"><a href="#快捷操作" class="headerlink" title="快捷操作"></a>快捷操作</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 划分上下两个窗格</span><br><span class="line">$ tmux split-window</span><br><span class="line"></span><br><span class="line"># 划分左右两个窗格</span><br><span class="line">$ tmux split-window -h</span><br></pre></td></tr></table></figure>
+
+<h3 id="面板快捷键"><a href="#面板快捷键" class="headerlink" title="面板快捷键"></a>面板快捷键</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+b %：划分左右两个窗格。</span><br><span class="line">Ctrl+b &quot;：划分上下两个窗格。</span><br><span class="line">Ctrl+b &lt;arrow key&gt;：光标切换到其他窗格。&lt;arrow key&gt;是指向要切换到的窗格的方向键，比如切换到下方窗格，就按方向键↓。</span><br><span class="line">Ctrl+b ;：光标切换到上一个窗格。</span><br><span class="line">Ctrl+b o：光标切换到下一个窗格。</span><br><span class="line">Ctrl+b &#123;：当前窗格与上一个窗格交换位置。</span><br><span class="line">Ctrl+b &#125;：当前窗格与下一个窗格交换位置。</span><br><span class="line">Ctrl+b Ctrl+o：所有窗格向前移动一个位置，第一个窗格变成最后一个窗格。</span><br><span class="line">Ctrl+b Alt+o：所有窗格向后移动一个位置，最后一个窗格变成第一个窗格。</span><br><span class="line">Ctrl+b x：关闭当前窗格。</span><br><span class="line">Ctrl+b !：将当前窗格拆分为一个独立窗口。</span><br><span class="line">Ctrl+b z：当前窗格全屏显示，再使用一次会变回原来大小。</span><br><span class="line">Ctrl+b Ctrl+&lt;arrow key&gt;：按箭头方向调整窗格大小。</span><br><span class="line">Ctrl+b q：显示窗格编号。</span><br></pre></td></tr></table></figure>
+
+<h3 id="窗口快捷键"><a href="#窗口快捷键" class="headerlink" title="窗口快捷键"></a>窗口快捷键</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Ctrl+b c：创建一个新窗口，状态栏会显示多个窗口的信息。</span><br><span class="line">Ctrl+b p：切换到上一个窗口（按照状态栏上的顺序）。</span><br><span class="line">Ctrl+b n：切换到下一个窗口。</span><br><span class="line">Ctrl+b &lt;number&gt;：切换到指定编号的窗口，其中的&lt;number&gt;是状态栏上的窗口编号。</span><br><span class="line">Ctrl+b w：从列表中选择窗口。</span><br><span class="line">Ctrl+b ,：窗口重命名。</span><br></pre></td></tr></table></figure>
+
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><p><a target="_blank" rel="noopener" href="https://www.ruanyifeng.com/blog/2019/10/tmux.html">tmux 命令大全</a></p>
+<p><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000011488954">tmux使用手册</a></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
 
     
 
@@ -828,7 +916,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-02-17 17:07:13" itemprop="dateModified" datetime="2022-02-17T17:07:13+08:00">2022-02-17</time>
+      <time title="修改时间：2022-02-18 09:47:31" itemprop="dateModified" datetime="2022-02-18T09:47:31+08:00">2022-02-18</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -954,6 +1042,34 @@
 <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean </span><br><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure>
 
 <p>就可以将本地主题同步至远端啦。</p>
+<h1 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h1><blockquote>
+<p>Usage: hexo <command></p>
+<ul>
+<li><p>Commands:</p>
+<p>clean   Remove generated files and cache.</p>
+<p>config  Get or set configurations.</p>
+<p>deploy  Deploy your website.</p>
+<p>generate Generate static files.</p>
+<p>help   Get help on a command.</p>
+<p>init   Create a new Hexo folder.</p>
+<p>list   List the information of the site</p>
+<p>migrate  Migrate your site from other system to Hexo.</p>
+<p>new    Create a new post.</p>
+<p>publish  Moves a draft post from _drafts to _posts folder.</p>
+<p>render  Render files with renderer plugins.</p>
+<p>server  Start the server.</p>
+<p>version  Display version information.</p>
+</li>
+<li><p>Global Options:</p>
+<p>–config Specify config file instead of using _config.yml</p>
+<p>–cwd   Specify the CWD</p>
+<p>–debug  Display all verbose messages in the terminal</p>
+<p>–draft  Display draft posts</p>
+<p>–safe  Disable all plugins and scripts</p>
+<p>–silent Hide output on console</p>
+</li>
+</ul>
+</blockquote>
 
       
     </div>
